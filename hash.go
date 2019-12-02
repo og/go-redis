@@ -2,20 +2,12 @@ package gredis
 
 import (
 	"github.com/mediocregopher/radix/v3"
+	ge "github.com/og/x/error"
 )
 
-package gredis
-
-import (
-"github.com/mediocregopher/radix/v3"
-gconv "github.com/og/x/conv"
-ge "github.com/og/x/error"
-"strconv"
-)
-
-func (self RedisClient) HGetBool(key string) (value bool) {
+func (self RedisClient) HGetBool(key string, field string) (value bool) {
 	data := radix.MaybeNil{Rcv: &value}
-	err := self.Core.Do(radix.Cmd(&data, HGET, key))
+	err := self.Core.Do(radix.Cmd(&data, HGET, key, field))
 	switch true {
 	case err != nil:
 		panic(err)
@@ -24,39 +16,38 @@ func (self RedisClient) HGetBool(key string) (value bool) {
 	}
 	return
 }
-// func (self RedisClient) SetBool(key string, value bool) {
-// 	valueString := ""
-// 	if value {
-// 		valueString = "1"
-// 	} else {
-// 		valueString = "0"
-// 	}
-// 	err := self.Core.Do(radix.Cmd(nil, SET, key, valueString)); ge.Check(err)
-// }
-// func (self RedisClient) Pexpire(key string, duration time.Duration) {
-// 	err := self.Core.Do(radix.Cmd(nil, PEXPIRE, key, gconv.Int64String(duration.Milliseconds()))); ge.Check(err)
-// }
-//
-// func (self RedisClient) SetString(key string, value string) {
-// 	err := self.Core.Do(radix.Cmd(nil, SET, key, value)); ge.Check(err)
-// }
-// func (self RedisClient) SetStringNX(key string, value string) {
-// 	err := self.Core.Do(radix.Cmd(nil, SET, key, value, NX)); ge.Check(err)
-// }
-// func (self RedisClient) GetString(key string) (value string, has bool) {
-// 	data := radix.MaybeNil{Rcv: &value}
-// 	err := self.Core.Do(radix.Cmd(&data, GET, key))
-// 	switch true {
-// 	case err != nil:
-// 		panic(err)
-// 	case data.Nil == true:
-// 		return "", has
-// 	case data.Nil == false:
-// 		has = true
-// 		return
-// 	}
-// 	return
-// }
+func (self RedisClient) HSetBool(key string, field string, value bool) {
+	valueString := ""
+	if value {
+		valueString = "1"
+	} else {
+		valueString = "0"
+	}
+	err := self.Core.Do(radix.Cmd(nil, HSET, key, field, valueString)); ge.Check(err)
+}
+
+
+func (self RedisClient) HSetString(key string, field string, value string) {
+	err := self.Core.Do(radix.Cmd(nil, HSET, key, field, value)); ge.Check(err)
+}
+func (self RedisClient) HSetStringNX(key string, field string, value string) {
+	err := self.Core.Do(radix.Cmd(nil, HSET, key, field, value, NX)); ge.Check(err)
+}
+func (self RedisClient) HGetString(key string, field string) (value string, has bool) {
+	data := radix.MaybeNil{Rcv: &value}
+	err := self.Core.Do(radix.Cmd(&data, HGET, key, field))
+	switch true {
+	case err != nil:
+		panic(err)
+	case data.Nil == true:
+		return "", has
+	case data.Nil == false:
+		has = true
+		return
+	}
+	return
+}
+
 // func (self RedisClient) StrLen(key string) (value int) {
 // 	data := radix.MaybeNil{Rcv: &value}
 // 	err := self.Core.Do(radix.Cmd(&data, STRLEN, key))

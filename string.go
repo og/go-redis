@@ -5,6 +5,7 @@ import (
 	gconv "github.com/og/x/conv"
 	ge "github.com/og/x/error"
 	"strconv"
+	"time"
 )
 
 func (self RedisClient) GetBool(key string) (value bool) {
