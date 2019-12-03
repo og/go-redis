@@ -5,7 +5,6 @@ import (
 	gconv "github.com/og/x/conv"
 	ge "github.com/og/x/error"
 	"strconv"
-	"time"
 )
 
 func (self RedisClient) GetBool(key string) (value bool) {
@@ -28,9 +27,7 @@ func (self RedisClient) SetBool(key string, value bool) {
 	}
 	err := self.Core.Do(radix.Cmd(nil, SET, key, valueString)); ge.Check(err)
 }
-func (self RedisClient) Pexpire(key string, duration time.Duration) {
-	err := self.Core.Do(radix.Cmd(nil, PEXPIRE, key, gconv.Int64String(duration.Milliseconds()))); ge.Check(err)
-}
+
 
 func (self RedisClient) SetString(key string, value string) {
 	err := self.Core.Do(radix.Cmd(nil, SET, key, value)); ge.Check(err)
@@ -145,3 +142,13 @@ func (self RedisClient) IncrByFloat(key string, amount float64) (value float64) 
 	return
 }
 
+func (self RedisClient) TTL (key string) (value int) {
+	data := radix.MaybeNil{Rcv: &value}
+	err := self.Core.Do(radix.Cmd(&data, TTL, key)); ge.Check(err)
+	return
+}
+func (self RedisClient) PTTL (key string) (value int) {
+	data := radix.MaybeNil{Rcv: &value}
+	err := self.Core.Do(radix.Cmd(&data, PTTL, key)); ge.Check(err)
+	return
+}

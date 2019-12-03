@@ -5,7 +5,6 @@ import (
 	grand "github.com/og/x/rand"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 var r gredis.RedisClient
 func init () {
@@ -61,22 +60,6 @@ func TestRedisClient_StrLen(t *testing.T) {
 	}
 	{
 		assert.Equal(t, r.StrLen("StrLenNotExist"), 0)
-	}
-}
-func TestRedisClient_Pexpire(t *testing.T) {
-	r.SetString("Pexpire", "nimo")
-	r.Pexpire("Pexpire", time.Duration(time.Second*1))
-	{
-		value , has := r.GetString("Pexpire")
-		assert.Equal(t, value, "nimo")
-		assert.Equal(t, has, true)
-	}
-	{
-		time.Sleep(time.Duration(time.Millisecond * 200))
-		time.Sleep(time.Duration(time.Second*1))
-		value , has := r.GetString("Pexpire")
-		assert.Equal(t, value, "")
-		assert.Equal(t, has, false)
 	}
 }
 
